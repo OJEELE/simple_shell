@@ -6,7 +6,7 @@
  */
 int main(void)
 {
-	if (issatty(STDIN_FILENO) == 1)
+	if (isatty(STDIN_FILENO) == 1)
 	{
 		shell_interactive();
 	}
@@ -64,7 +64,7 @@ char *read_line(void)
 		if(feof(stdin))
 		{
 			free(line);
-			exit(EXIT_SUCCES);
+			exit(EXIT_SUCCESS);
 		}
 		else
 		{
@@ -89,7 +89,7 @@ char **split_line(char *line)
 	int i = 0;
 	char **tokens = malloc(buffsize * sizeof(char *));
 	char *token;
-	char delim = " \t\n";
+	char *delim = " \t\n";
 
 	if (!tokens)
 	{
@@ -99,4 +99,63 @@ char **split_line(char *line)
 	token = strtok(line, delim);
 	while (token != NULL)
 	{
+		if (token[0] == '#')
+		{
+			break;
+		}
+		tokens[i] = token;
+		i++;
+		if (i >= buffsize)
+		{
+			buffsize += buffsize;
+			tokens = realloc(tokens, buffsize * sizeof (char *));
+			if (!tokens)
+			{
+				fprintf(stderr, "reallocation failure");
+				exit(EXIT_FAILURE);
+			}
+		}
+		token = strtok(NULL, delim);
+	}
+		tokens[i] = NULL;
+		return (tokens);
+}
+/* execute the command line or process */
 
+/**
+ * execute_args - map if command is a bultin or a process 
+ * @args: command and its flags
+ *
+ * Return: 1 on success or 0 otherwise
+ */
+int execute_args(char **args)
+{
+	char *builtin_func_list[] = {
+		"cd",
+		"env",
+		"help",
+		"exit"
+	};
+	int (*builtin_func[])(char **) = {
+		&own_cd,
+		&own_env,
+		&own_help,
+		&own_exit
+	};
+	size_t i = 0;
+
+	if (args[0] == NULL)
+	{
+		return (-1);
+	}
+	size_t array_size = sizeof(builtin_func_list) / sizeof(char *);
+	for (; i < array_size; i++)
+	{
+		if (strcmp(args[0], builtin_func_list[i]) == 0)
+		{
+			return ((*builtin_func[i])(args));
+		}
+	}
+	return (new_process(args));
+}
+			
