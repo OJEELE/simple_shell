@@ -130,30 +130,31 @@ char **split_line(char *line)
  */
 int execute_args(char **args)
 {
-	char *builtin_func_list[] = {
+	char *builtin_commands[] = {
 		"cd",
 		"env",
 		"help",
 		"exit"
 	};
-	int (*builtin_func[])(char **) = {
+	int (*builtin_functions[])(char **) = {
 		&own_cd,
 		&own_env,
 		&own_help,
 		&own_exit
 	};
 	size_t i = 0;
-
+	size_t num_builtins = sizeof(builtin_commands) / sizeof(builtin_commands[0]);
 	if (args[0] == NULL)
 	{
+		fprintf(stderr, "No command provided.\n");
 		return (-1);
 	}
-	size_t array_size = sizeof(builtin_func_list) / sizeof(char *);
-	for (; i < array_size; i++)
+
+	for (; i < num_builtins; i++)
 	{
-		if (strcmp(args[0], builtin_func_list[i]) == 0)
+		if (strcmp(args[0], builtin_commands[i]) == 0)
 		{
-			return ((*builtin_func[i])(args));
+			return ((*builtin_functions[i])(args));
 		}
 	}
 	return (new_process(args));
