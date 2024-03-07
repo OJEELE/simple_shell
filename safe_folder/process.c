@@ -35,3 +35,44 @@ int new_process(char **args)
 	}
 	return (-1);
 }
+
+/**
+ * own_env - function executes builtin environment command
+ *
+ * Return: 1 on sucess
+ */
+int own_env(char **args)
+{
+	printf("Executing own_env command\n");
+	return (1);
+}
+/**
+ * own_cd - execute cd builtin command
+ *
+ *
+ */
+int own_cd(char **args)
+{
+	if (args[1] == NULL)
+	{
+		fprintf(stderr, "cd: missing argument\n");
+	}
+	else
+	{
+		if(chdir(args[1]) != 0)
+			perror("cd");
+	}
+	return (1);
+}
+
+int own_exit(char **args)
+{
+	printf("EXecuting own_exit command\n");
+	exit(EXIT_SUCCESS);
+}
+
+int own_help(char **args)
+{
+	printf("executing own_help command\n");
+	return (1);
+}
